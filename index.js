@@ -12,37 +12,27 @@ const landingPageHTML = `
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GITStand | Ultimate Deployment</title>
+    <title>GITStand | Instant Deployment</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #000000; --card: #0d0d0d; --border: #222; --accent: #ffffff; --text-muted: #888; }
+        :root { --bg: #000; --card: #0d0d0d; --border: #222; --accent: #fff; --text-muted: #888; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        
         .navbar { height: 70px; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 40px; justify-content: space-between; position: sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 100; }
-        .logo { font-weight: 600; font-size: 22px; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; }
+        .logo { font-weight: 600; font-size: 22px; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .logo-icon { width: 24px; height: 24px; border: 2px solid #fff; border-radius: 50%; position: relative; }
         .logo-icon::after { content: ''; position: absolute; width: 8px; height: 8px; background: #fff; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-
         .container { max-width: 900px; margin: 80px auto; padding: 0 20px; text-align: center; }
         h1 { font-size: 48px; font-weight: 300; margin-bottom: 40px; letter-spacing: -2px; }
-
         .input-group { position: relative; margin-bottom: 40px; }
-        #repoInput { width: 100%; background: var(--card); border: 1px solid var(--border); padding: 24px 30px; border-radius: 100px; color: #fff; font-size: 18px; outline: none; transition: all 0.3s; text-align: center; }
+        #repoInput { width: 100%; background: var(--card); border: 1px solid var(--border); padding: 24px 30px; border-radius: 100px; color: #fff; font-size: 18px; outline: none; transition: 0.3s; text-align: center; }
         #repoInput:focus { border-color: var(--accent); box-shadow: 0 0 30px rgba(255,255,255,0.05); }
-
-        .file-browser { background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: left; display: none; animation: fadeIn 0.5s ease; position: relative; overflow: hidden; }
+        .file-browser { background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: left; display: none; animation: fadeIn 0.5s ease; overflow: hidden; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         .browser-header { padding: 15px 25px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #151515; }
-        .file-item { padding: 12px 25px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 15px; color: #ccc; transition: 0.2s; cursor: default; }
-        .file-item:hover { background: #1a1a1a; }
-        .file-icon { color: var(--text-muted); font-size: 14px; }
-
+        .file-item { padding: 12px 25px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 15px; color: #ccc; }
         .deploy-btn { background: #fff; color: #000; border: none; padding: 10px 24px; border-radius: 100px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .deploy-btn:hover { transform: scale(1.05); opacity: 0.9; }
-
-        .log-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; display: none; flex-direction: column; padding: 60px; font-family: 'JetBrains Mono', monospace; }
+        .log-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 200; display: none; flex-direction: column; padding: 60px; font-family: 'JetBrains Mono', monospace; }
         .log-line { margin-bottom: 8px; font-size: 14px; color: #0f0; opacity: 0; animation: logEntry 0.1s forwards; }
         @keyframes logEntry { to { opacity: 1; } }
         .success-box { margin-top: 40px; display: none; text-align: center; }
@@ -50,99 +40,52 @@ const landingPageHTML = `
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo"><div class="logo-icon"></div> GITStand</div>
-        <div id="navActions"></div>
-    </nav>
-
+    <nav class="navbar"><div class="logo" onclick="location.reload()"><div class="logo-icon"></div> GITStand</div></nav>
     <div class="container">
         <h1>Deploy anything from GitHub.</h1>
         <div class="input-group">
             <input type="text" id="repoInput" placeholder="https://github.com/username/repository" autocomplete="off">
         </div>
-
         <div id="browser" class="file-browser">
-            <div class="browser-header">
-                <span id="repoNameDisplay">Files</span>
-                <button class="deploy-btn" onclick="startDeploy()">Deploy | 展開</button>
-            </div>
+            <div class="browser-header"><span id="repoNameDisplay">Files</span><button class="deploy-btn" onclick="startDeploy()">Deploy | 展開</button></div>
             <div id="fileList"></div>
         </div>
     </div>
-
     <div id="logOverlay" class="log-overlay">
         <div id="logContent"></div>
         <div id="successBox" class="success-box">
             <h2 style="font-size: 40px; margin-bottom: 20px;">Success!</h2>
-            <p style="color: #888; margin-bottom: 40px;">Site is now live and optimized.</p>
             <a href="#" id="liveLink" class="live-btn">Open Live Site</a>
         </div>
     </div>
-
     <script>
         const input = document.getElementById('repoInput');
-        const browser = document.getElementById('browser');
-        const fileList = document.getElementById('fileList');
-
         input.addEventListener('input', async (e) => {
-            const url = e.target.value;
-            const match = url.match(/github\.com\/([^/]+)\/([^/]+)/);
+            const match = e.target.value.match(/github\.com\\/([^/]+)\\/([^/]+)/);
             if (match) {
                 const [_, user, repo] = match;
-                loadRepoPreview(user, repo.replace('.git', ''));
-            }
-        });
-
-        async function loadRepoPreview(user, repo) {
-            try {
-                const res = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/`);
+                const repoClean = repo.replace('.git', '');
+                const res = await fetch(\`https://api.github.com/repos/\${user}/\${repoClean}/contents/\`);
                 const data = await res.json();
                 if (!Array.isArray(data)) return;
-
-                document.getElementById('repoNameDisplay').innerText = `${user} / ${repo}`;
-                fileList.innerHTML = '';
-                data.forEach(file => {
-                    const item = document.createElement('div');
-                    item.className = 'file-item';
-                    item.innerHTML = `<span class="file-icon">${file.type === 'dir' ? '📁' : '📄'}</span> ${file.name}`;
-                    fileList.appendChild(item);
-                });
-                browser.style.display = 'block';
-                window.currentRepo = { user, repo, hasIndex: data.some(f => f.name === 'index.html') };
-            } catch (e) { console.error(e); }
-        }
-
-        function addLog(text, delay) {
-            return new Promise(res => {
-                setTimeout(() => {
-                    const line = document.createElement('div');
-                    line.className = 'log-line';
-                    line.innerText = `> ${text}`;
-                    document.getElementById('logContent').appendChild(line);
-                    res();
-                }, delay);
-            });
-        }
-
-        async function startDeploy() {
-            const { user, repo, hasIndex } = window.currentRepo;
-            document.getElementById('logOverlay').style.display = 'flex';
-            
-            await addLog(`Initializing GITStand Deployment Engine...`, 500);
-            await addLog(`Cloning repository: ${user}/${repo}`, 800);
-            await addLog(`Analyzing directory structure...`, 600);
-            await addLog(`Optimizing assets and rewriting absolute paths...`, 1000);
-            await addLog(`Validating entry point...`, 500);
-
-            if (hasIndex) {
-                await addLog(`SUCCESS: index.html detected. Site is ready.`, 400);
-                document.getElementById('successBox').style.display = 'block';
-                document.getElementById('liveLink').href = `/${user}/${repo}/`;
-            } else {
-                await addLog(`INFO: index.html not found. Using Directory Listing Mode.`, 400);
-                document.getElementById('successBox').style.display = 'block';
-                document.getElementById('liveLink').href = `/${user}/${repo}/`;
+                document.getElementById('repoNameDisplay').innerText = \`\${user} / \${repoClean}\`;
+                document.getElementById('fileList').innerHTML = data.map(f => \`<div class="file-item"><span>\${f.type === 'dir' ? '📁' : '📄'}</span> \${f.name}</div>\`).join('');
+                document.getElementById('browser').style.display = 'block';
+                window.currentRepo = { user, repo: repoClean, hasIndex: data.some(f => f.name === 'index.html') };
             }
+        });
+        async function startDeploy() {
+            document.getElementById('logOverlay').style.display = 'flex';
+            const logs = ["Initializing Engine...", "Connecting to GitHub...", "Analyzing project structure...", "Rewriting absolute paths...", "Optimizing assets...", "Finalizing edge deployment..."];
+            for (const log of logs) {
+                const line = document.createElement('div');
+                line.className = 'log-line';
+                line.innerText = '> ' + log;
+                document.getElementById('logContent').appendChild(line);
+                await new Promise(r => setTimeout(r, 600));
+            }
+            document.getElementById('successBox').style.display = 'block';
+            document.getElementById('liveLink').href = \`/\${window.currentRepo.user}/\${window.currentRepo.repo}/\`;
         }
     </script>
 </body>
@@ -190,8 +133,8 @@ async function getRepoMeta(user, repo) {
 // --- メインルーティング ---
 
 // 1. トップページ
-app.get('/', (req, res) => {
-    res.send(landingPageHTML);
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // 2. プロキシエンジン
