@@ -4,169 +4,262 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>GITStand | Ultimate Deployment</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
-        /* ===== Theme variables (white theme, corporate UI) ===== */
+        /* =========================
+           Design system — polished UI
+           Only visual/structure changes — JS logic preserved
+           ========================= */
+
         :root{
-            --bg: #ffffff;
-            --card: #f7f8fa;
-            --border: #e6e7ea;
+            --bg: #f6f8fb;
+            --surface: #ffffff;
+            --muted: #6b7280;
+            --text: #0b1220;
             --accent: #0b5fff;
             --accent-2: #06b6d4;
-            --text: #0b1220;
-            --muted: #6b7280;
-            --success: #0b8a3e;
             --glass: rgba(255,255,255,0.6);
-            --panel-bg: #fbfdff;
+            --border: #e6e9ef;
+            --success: #0b8a3e;
             --mono: 'JetBrains Mono', monospace;
+            --radius: 12px;
+            --shadow-soft: 0 8px 30px rgba(16,24,40,0.06);
+            --shadow-strong: 0 20px 60px rgba(16,24,40,0.08);
         }
 
-        /* ===== Base reset ===== */
         *{box-sizing:border-box;margin:0;padding:0}
         html,body{height:100%}
         body{
-            background:var(--bg);
+            font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: linear-gradient(180deg,#f6f8fb 0%, #eef2f7 100%);
             color:var(--text);
-            font-family:'Inter',sans-serif;
             -webkit-font-smoothing:antialiased;
             -moz-osx-font-smoothing:grayscale;
-            overflow-x:hidden;
+            line-height:1.45;
         }
 
-        /* ===== Navbar ===== */
+        /* ---------- Top navigation ---------- */
         .navbar{
-            height:70px;
-            border-bottom:1px solid var(--border);
-            display:flex;
-            align-items:center;
-            padding:0 40px;
-            justify-content:space-between;
             position:sticky;
             top:0;
-            background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9));
+            z-index:120;
+            height:72px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:0 28px;
+            background: rgba(255,255,255,0.85);
+            border-bottom: 1px solid var(--border);
             backdrop-filter: blur(6px);
-            z-index:100;
         }
-        .logo{font-weight:600;font-size:22px;letter-spacing:-0.5px;display:flex;align-items:center;gap:12px;color:var(--text)}
-        .logo-icon{
-            width:28px;height:28px;border:2px solid var(--text);border-radius:8px;position:relative;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#fff,#f1f5f9)
+        .logo {
+            display:flex;
+            align-items:center;
+            gap:12px;
+            font-weight:700;
+            font-size:18px;
+            color:var(--text);
         }
-        .logo-icon::after{content:'';width:8px;height:8px;background:var(--accent);border-radius:2px}
+        .logo-icon {
+            width:36px;
+            height:36px;
+            border-radius:10px;
+            background: linear-gradient(180deg,#fff,#f1f5f9);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            box-shadow: 0 4px 12px rgba(11,18,32,0.06);
+            border:1px solid rgba(11,18,32,0.04);
+        }
+        .logo-mark {
+            width:12px;height:12px;border-radius:3px;background:var(--accent);
+        }
+        .nav-actions { display:flex; gap:12px; align-items:center; }
 
-        /* ===== Page layout ===== */
+        .btn {
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            padding:10px 14px;
+            border-radius:999px;
+            font-weight:600;
+            cursor:pointer;
+            border: none;
+            text-decoration:none;
+        }
+        .btn-primary {
+            background:var(--accent);
+            color:#fff;
+            box-shadow: 0 8px 24px rgba(11,95,255,0.12);
+        }
+        .btn-ghost {
+            background:transparent;
+            color:var(--text);
+            border:1px solid var(--border);
+        }
+
+        /* ---------- Page container ---------- */
         .page {
             max-width:1200px;
             margin:36px auto;
             padding:0 20px 80px;
         }
 
+        /* ---------- Hero ---------- */
         .hero {
-            display:flex;
-            gap:28px;
-            align-items:flex-start;
-            margin-bottom:28px;
-        }
-        .hero-left {
-            flex:1;
-            min-width:320px;
-        }
-        .hero-right {
-            width:420px;
-        }
-
-        h1{font-size:40px;font-weight:300;margin-bottom:12px;color:var(--text)}
-        .lead{color:var(--muted);margin-bottom:20px;font-size:16px}
-
-        /* ===== Input group ===== */
-        .input-group{position:relative;margin-bottom:20px}
-        #repoInput{
-            width:100%;
-            background:var(--card);
-            border:1px solid var(--border);
-            padding:20px 30px;
-            border-radius:100px;
-            color:var(--text);
-            font-size:18px;
-            outline:none;
-            transition:all .25s ease;
-            text-align:center;
-            box-shadow:0 6px 18px rgba(15,20,30,0.04);
-        }
-        #repoInput::placeholder{color:var(--muted)}
-        #repoInput:focus{border-color:var(--accent);box-shadow:0 8px 30px rgba(11,95,255,0.08);transform:translateY(-1px)}
-
-        /* ===== File browser (light card) ===== */
-        .file-browser{
-            background:var(--card);
-            border:1px solid var(--border);
-            border-radius:12px;
-            text-align:left;
-            display:none;
-            animation:fadeInCard .35s ease;
-            position:relative;
-            overflow:hidden;
-            box-shadow:0 10px 30px rgba(16,24,40,0.04);
-            margin-top:12px;
-        }
-        @keyframes fadeInCard{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-        .browser-header{padding:15px 25px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#ffffff,#fbfdff)}
-        .file-item{padding:12px 25px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:15px;color:var(--muted);transition:.18s ease;cursor:default;background:transparent}
-        .file-item:hover{background:linear-gradient(90deg, rgba(11,95,255,0.03), rgba(11,95,255,0.01));color:var(--text)}
-        .file-icon{color:var(--muted);font-size:14px}
-
-        .deploy-btn{
-            background:var(--accent);
-            color:#fff;border:none;padding:10px 24px;border-radius:100px;font-weight:600;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease;box-shadow:0 6px 18px rgba(11,95,255,0.18)
-        }
-        .deploy-btn:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(11,95,255,0.18)}
-
-        /* ===== Product features & docs panel ===== */
-        .card {
-            background:var(--panel-bg);
-            border:1px solid var(--border);
-            border-radius:12px;
-            padding:20px;
-            box-shadow:0 8px 30px rgba(12,18,30,0.04);
-        }
-
-        .features {
             display:grid;
-            grid-template-columns:repeat(2,1fr);
-            gap:16px;
+            grid-template-columns: 1fr 420px;
+            gap:28px;
+            align-items:start;
+            margin-bottom:22px;
+        }
+        .hero-card {
+            background:var(--surface);
+            border-radius:var(--radius);
+            padding:28px;
+            box-shadow:var(--shadow-soft);
+            border:1px solid var(--border);
+        }
+        .hero-title {
+            font-size:36px;
+            font-weight:600;
+            margin-bottom:8px;
+            letter-spacing:-0.4px;
+        }
+        .hero-sub {
+            color:var(--muted);
+            margin-bottom:20px;
+            font-size:15px;
+        }
+
+        /* ---------- Input group (centered) ---------- */
+        .input-group { margin:18px 0 8px; display:flex; justify-content:center; }
+        #repoInput {
+            width:100%;
+            max-width:820px;
+            padding:18px 26px;
+            border-radius:999px;
+            border:1px solid var(--border);
+            background:linear-gradient(180deg,#fff,#fbfdff);
+            font-size:16px;
+            color:var(--text);
+            outline:none;
+            box-shadow: 0 6px 20px rgba(11,18,32,0.04);
+            text-align:center;
+            transition: box-shadow .18s ease, transform .12s ease, border-color .12s ease;
+        }
+        #repoInput::placeholder { color:var(--muted); }
+        #repoInput:focus { box-shadow: 0 12px 36px rgba(11,95,255,0.08); border-color:var(--accent); transform:translateY(-2px); }
+
+        /* ---------- File browser ---------- */
+        .file-browser {
+            margin-top:14px;
+            border-radius:10px;
+            overflow:hidden;
+            border:1px solid var(--border);
+            background:linear-gradient(180deg,#fff,#fbfdff);
+            display:none;
+            box-shadow:var(--shadow-soft);
+        }
+        .browser-header {
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:14px 18px;
+            border-bottom:1px solid var(--border);
+            background:transparent;
+        }
+        .repo-name { font-weight:700; color:var(--text); }
+        .file-list { padding:8px 0; max-height:260px; overflow:auto; }
+        .file-item {
+            display:flex;
+            gap:12px;
+            align-items:center;
+            padding:12px 18px;
+            color:var(--muted);
+            border-top:1px solid rgba(11,18,32,0.02);
+            transition: background .12s ease, color .12s ease;
+        }
+        .file-item:first-child { border-top: none; }
+        .file-item:hover { background: linear-gradient(90deg, rgba(11,95,255,0.03), rgba(11,95,255,0.01)); color:var(--text); }
+
+        /* ---------- Right column (summary) ---------- */
+        .summary {
+            display:flex;
+            flex-direction:column;
+            gap:14px;
+        }
+        .summary .card { padding:18px; border-radius:12px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow-soft); }
+        .summary .stat {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:8px;
+        }
+        .stat .label { color:var(--muted); font-size:13px; }
+        .stat .value { font-weight:700; font-size:16px; }
+
+        /* ---------- Features grid ---------- */
+        .features {
             margin-top:18px;
+            display:grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap:12px;
         }
         .feature {
             background:linear-gradient(180deg,#fff,#fbfdff);
             border:1px solid var(--border);
-            padding:16px;border-radius:10px;
+            border-radius:10px;
+            padding:14px;
+            box-shadow: 0 6px 18px rgba(11,18,32,0.03);
         }
-        .feature h4{margin-bottom:8px;font-size:16px}
-        .feature p{color:var(--muted);font-size:14px}
+        .feature h4 { margin-bottom:8px; font-size:14px; }
+        .feature p { color:var(--muted); font-size:13px; }
 
-        /* ===== API docs layout ===== */
+        /* ---------- Docs area ---------- */
         .docs {
-            margin-top:28px;
+            margin-top:26px;
             display:grid;
-            grid-template-columns: 360px 1fr;
+            grid-template-columns: 260px 1fr;
             gap:20px;
-            align-items:start;
         }
         .docs .sidebar {
             position:sticky;
-            top:90px;
+            top:96px;
             align-self:start;
         }
-        .nav-list { list-style:none; padding:12px; border-radius:10px; border:1px solid var(--border); background:linear-gradient(180deg,#fff,#fbfdff) }
-        .nav-list li { padding:10px 12px; color:var(--muted); cursor:pointer; border-radius:8px; margin-bottom:6px; transition:all .12s }
-        .nav-list li:hover { background:rgba(11,95,255,0.04); color:var(--text) }
-        .doc-panel { background:linear-gradient(180deg,#fff,#fbfdff); border:1px solid var(--border); border-radius:12px; padding:20px; }
+        .nav-list {
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-radius:10px;
+            padding:10px;
+            box-shadow:var(--shadow-soft);
+        }
+        .nav-list li {
+            list-style:none;
+            padding:10px 12px;
+            border-radius:8px;
+            color:var(--muted);
+            cursor:pointer;
+            font-weight:600;
+            font-size:13px;
+            transition: background .12s ease, color .12s ease;
+        }
+        .nav-list li:hover { background: rgba(11,95,255,0.04); color:var(--text); }
 
-        .doc-panel h3{margin-bottom:12px}
-        .doc-panel p{color:var(--muted);margin-bottom:12px}
+        .doc-panel {
+            background:var(--surface);
+            border-radius:12px;
+            padding:20px;
+            border:1px solid var(--border);
+            box-shadow:var(--shadow-soft);
+        }
+        .doc-panel h3 { margin-bottom:10px; font-size:18px; }
+        .doc-panel p { color:var(--muted); margin-bottom:12px; }
         pre.code {
             background:#0b1220;
             color:#dfffe6;
-            padding:16px;
+            padding:14px;
             border-radius:8px;
             overflow:auto;
             font-family:var(--mono);
@@ -176,13 +269,13 @@
         }
         table.api-table{width:100%;border-collapse:collapse;margin-top:12px}
         table.api-table th, table.api-table td{padding:10px;border-bottom:1px solid var(--border);text-align:left;font-size:14px}
-        table.api-table th{background:transparent;color:var(--muted);font-weight:600}
+        table.api-table th{background:transparent;color:var(--muted);font-weight:700}
 
-        /* ===== Log overlay (black render-like terminal + management UI) ===== */
+        /* ---------- Log overlay (management + terminal) ---------- */
         .log-overlay{
             position:fixed;
             inset:0;
-            background:radial-gradient(1200px 600px at 10% 10%, rgba(10,10,10,0.98), rgba(0,0,0,0.95));
+            background: radial-gradient(1200px 600px at 10% 10%, rgba(10,10,10,0.98), rgba(0,0,0,0.95));
             z-index:200;
             display:none;
             flex-direction:column;
@@ -200,7 +293,6 @@
             mix-blend-mode:overlay;opacity:0.6;
         }
 
-        /* layout inside overlay: left management panel, right logs */
         .overlay-inner {
             position:relative;
             z-index:2;
@@ -212,38 +304,35 @@
             margin:0 auto;
         }
 
-        /* management panel (Vercel-like) */
         .management {
-            background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
             border-radius:12px;
             padding:18px;
             border:1px solid rgba(255,255,255,0.04);
-            box-shadow:0 20px 60px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+            box-shadow:var(--shadow-strong);
             color:#fff;
         }
-        .management .proj-header { display:flex; align-items:center; gap:12px; margin-bottom:12px }
-        .proj-badge { background:rgba(255,255,255,0.04); padding:8px 10px; border-radius:8px; font-weight:600; font-size:14px }
-        .proj-title { font-size:18px; font-weight:600 }
+        .proj-header { display:flex; align-items:center; gap:12px; margin-bottom:12px }
+        .proj-badge { background:rgba(255,255,255,0.04); padding:8px 10px; border-radius:8px; font-weight:700; font-size:13px }
+        .proj-title { font-size:18px; font-weight:700 }
         .section { margin-top:14px; }
-        .section h4 { font-size:13px; color:rgba(255,255,255,0.9); margin-bottom:8px }
+        .section h4 { font-size:13px; color:rgba(255,255,255,0.95); margin-bottom:8px }
         .domains-list, .env-list, .deploy-list { display:flex; flex-direction:column; gap:8px }
         .domain-item, .env-item, .deploy-item {
             background:rgba(255,255,255,0.02);
             padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);
-            display:flex;justify-content:space-between;align-items:center;font-size:13px;color:rgba(255,255,255,0.9)
+            display:flex;justify-content:space-between;align-items:center;font-size:13px;color:rgba(255,255,255,0.95)
         }
-        .domain-item small { color:rgba(255,255,255,0.6) }
-        .env-key { font-weight:600; color:#fff }
+        .env-key { font-weight:700; color:#fff }
         .env-val { color:rgba(255,255,255,0.6); font-family:var(--mono); font-size:13px }
 
-        /* logs container */
         #logContent {
             position:relative;
             z-index:2;
             padding:24px;
             border-radius:8px;
             background:linear-gradient(180deg, rgba(10,10,10,0.35), rgba(0,0,0,0.25));
-            box-shadow:0 20px 60px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+            box-shadow:var(--shadow-strong);
             overflow:auto;
             max-height:calc(100vh - 160px);
             border:1px solid rgba(255,255,255,0.03);
@@ -290,100 +379,130 @@
         .success-box p{color:rgba(255,255,255,0.7);margin-bottom:20px}
 
         .live-btn{
-            background:#0b1220;color:#fff;text-decoration:none;padding:12px 36px;border-radius:100px;font-weight:600;font-size:16px;display:inline-block;box-shadow:0 8px 24px rgba(11,18,32,0.12)
+            background:#0b1220;color:#fff;text-decoration:none;padding:12px 36px;border-radius:999px;font-weight:700;font-size:15px;display:inline-block;box-shadow:0 8px 24px rgba(11,18,32,0.12)
         }
 
-        /* responsive */
-        @media (max-width:1000px){
-            .overlay-inner{grid-template-columns:1fr}
-            .hero{flex-direction:column}
-            .hero-right{width:100%}
-            .docs{grid-template-columns:1fr}
-            .docs .sidebar{position:static}
+        /* ---------- Responsive ---------- */
+        @media (max-width:1100px){
+            .hero { grid-template-columns: 1fr; }
+            .docs { grid-template-columns: 1fr; }
+            .docs .sidebar { position:static; }
+            .features { grid-template-columns: repeat(2,1fr); }
+            .overlay-inner { grid-template-columns: 1fr; padding-bottom:20px; }
         }
         @media (max-width:720px){
-            h1{font-size:28px}
-            .page{margin:20px auto;padding:0 16px 60px}
-            #logContent{max-height:calc(100vh - 120px)}
+            .page { margin:18px auto; padding:0 14px 60px; }
+            .features { grid-template-columns: 1fr; }
+            #repoInput { font-size:15px; padding:14px 18px; }
+            .hero-title { font-size:22px; }
         }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <div class="logo"><div class="logo-icon"></div> GITStand</div>
-        <div id="navActions"></div>
+        <div class="logo">
+            <div class="logo-icon"><div class="logo-mark"></div></div>
+            <div>GITStand</div>
+        </div>
+        <div class="nav-actions">
+            <a class="btn btn-ghost" href="#" onclick="document.getElementById('repoInput').focus();return false">Docs</a>
+            <a class="btn btn-primary" href="#" onclick="document.getElementById('repoInput').focus();return false">Get started</a>
+        </div>
     </nav>
 
     <main class="page">
-        <!-- HERO: product pitch like an enterprise landing -->
+        <!-- HERO -->
         <section class="hero">
-            <div class="hero-left">
-                <h1>Deploy anything from GitHub — instant, secure, and production-ready</h1>
-                <p class="lead">GITStand is an enterprise-grade static and dynamic deployment platform that converts GitHub repositories into fast, globally distributed sites. Built for engineering teams, product managers, and platform engineers who demand predictable builds, secure environments, and clear operational controls.</p>
+            <div class="hero-card">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:18px;">
+                    <div style="flex:1">
+                        <div class="hero-title">Deploy anything from GitHub — instant, secure, production-ready</div>
+                        <div class="hero-sub">GITStand converts GitHub repositories into globally distributed sites with predictable builds, preview environments, and enterprise controls.</div>
+                    </div>
+                    <div style="min-width:160px;text-align:right">
+                        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Trusted by teams</div>
+                        <div style="display:flex;gap:8px;justify-content:flex-end">
+                            <div style="background:#fff;padding:8px 10px;border-radius:8px;border:1px solid var(--border);font-weight:700">ACME</div>
+                            <div style="background:#fff;padding:8px 10px;border-radius:8px;border:1px solid var(--border);font-weight:700">NOVA</div>
+                        </div>
+                    </div>
+                </div>
 
-                <!-- Input and file browser (unchanged logic) -->
+                <!-- Input and file browser (logic unchanged) -->
                 <div class="input-group">
                     <input type="text" id="repoInput" placeholder="https://github.com/username/repository" autocomplete="off">
                 </div>
 
                 <div id="browser" class="file-browser">
                     <div class="browser-header">
-                        <span id="repoNameDisplay">Files</span>
-                        <button class="deploy-btn" onclick="startDeploy()">Deploy | 展開</button>
+                        <div class="repo-name" id="repoNameDisplay">Files</div>
+                        <div style="display:flex;gap:10px;align-items:center">
+                            <button class="btn btn-ghost" onclick="alert('Preview settings — UI only')">Preview</button>
+                            <button class="btn btn-primary" onclick="startDeploy()">Deploy | 展開</button>
+                        </div>
                     </div>
-                    <div id="fileList"></div>
+                    <div id="fileList" class="file-list"></div>
                 </div>
 
-                <!-- Key features -->
-                <div class="card" style="margin-top:18px">
-                    <h3 style="margin-bottom:8px">Enterprise features</h3>
-                    <div class="features">
-                        <div class="feature">
-                            <h4>Global CDN & Edge Caching</h4>
-                            <p>Automatic edge distribution with cache invalidation and smart asset fingerprinting for sub-second load times worldwide.</p>
+                <!-- Feature highlights -->
+                <div style="margin-top:18px">
+                    <div style="display:flex;gap:12px;align-items:center">
+                        <div style="flex:1" class="card">
+                            <div style="display:flex;justify-content:space-between;align-items:center">
+                                <div>
+                                    <div style="font-weight:700">Edge-first CDN</div>
+                                    <div style="color:var(--muted);font-size:13px">Automatic caching and global invalidation</div>
+                                </div>
+                                <div style="text-align:right">
+                                    <div style="font-weight:700;color:var(--accent)">99.99%</div>
+                                    <div style="color:var(--muted);font-size:12px">uptime</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="feature">
-                            <h4>Zero-downtime Deploys</h4>
-                            <p>Atomic deploys with instant rollbacks and immutable build artifacts for safe production releases.</p>
-                        </div>
-                        <div class="feature">
-                            <h4>Environment Management</h4>
-                            <p>Per-branch preview environments, protected production branches, and environment variables with RBAC.</p>
-                        </div>
-                        <div class="feature">
-                            <h4>Observability & Logs</h4>
-                            <p>Real-time build logs, deployment history, and integration hooks for monitoring and alerting systems.</p>
+
+                        <div style="width:220px" class="card">
+                            <div style="font-weight:700;margin-bottom:6px">Zero-downtime</div>
+                            <div style="color:var(--muted);font-size:13px">Atomic deploys & instant rollbacks</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right column: condensed product summary & CTA -->
-            <aside class="hero-right">
+            <!-- Right summary column -->
+            <aside class="summary">
                 <div class="card">
-                    <h4 style="margin-bottom:8px">GITStand at a glance</h4>
-                    <p style="color:var(--muted);margin-bottom:12px">From single-file static sites to complex JAMstack apps, GITStand automates build, optimize, and publish steps with a developer-first API and a polished management console.</p>
-
-                    <div style="display:flex;gap:10px;margin-top:12px">
-                        <a class="deploy-btn" href="#" onclick="document.getElementById('repoInput').focus();return false">Get started</a>
-                        <a class="live-btn" href="#" style="background:var(--accent-2);box-shadow:0 8px 24px rgba(6,182,212,0.12)">Request demo</a>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                        <div>
+                            <div style="font-weight:700">GITStand</div>
+                            <div style="color:var(--muted);font-size:13px">Developer-first deployment platform</div>
+                        </div>
+                        <div style="text-align:right">
+                            <div style="font-weight:700;color:var(--accent)">Enterprise</div>
+                            <div style="color:var(--muted);font-size:12px">SAML, RBAC</div>
+                        </div>
                     </div>
 
-                    <div style="margin-top:16px">
-                        <strong style="display:block;margin-bottom:6px">For teams</strong>
-                        <small style="color:var(--muted)">SAML SSO, audit logs, usage quotas, and priority support available.</small>
+                    <div style="display:flex;gap:8px;margin-top:12px">
+                        <a class="btn btn-primary" href="#" onclick="document.getElementById('repoInput').focus();return false">Start free trial</a>
+                        <a class="btn btn-ghost" href="#" onclick="document.getElementById('repoInput').focus();return false">Contact sales</a>
                     </div>
                 </div>
 
-                <!-- Quick API summary card -->
-                <div class="card" style="margin-top:14px">
-                    <h4 style="margin-bottom:8px">API Quickstart</h4>
-                    <p style="color:var(--muted);margin-bottom:12px">Use the REST API to trigger builds, manage environment variables, and query deployment status.</p>
-                    <pre class="code" style="font-size:13px">curl -X POST "https://api.gitstand.example/v1/deploy" \
+                <div class="card">
+                    <div style="font-weight:700;margin-bottom:8px">API Quickstart</div>
+                    <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Trigger builds, manage env, and query deployments via REST.</div>
+                    <pre class="code" style="font-size:12px;padding:12px;border-radius:8px">curl -X POST "https://api.gitstand.example/v1/deploy" \
   -H "Authorization: Bearer &lt;API_KEY&gt;" \
   -H "Content-Type: application/json" \
   -d '{"owner":"username","repo":"repository","branch":"main"}'
-</pre>
+                    </pre>
+                </div>
+
+                <div class="card" style="display:flex;flex-direction:column;gap:8px">
+                    <div style="font-weight:700">Status</div>
+                    <div class="stat"><div class="label">Last deploy</div><div class="value" id="statusLastDeploy">—</div></div>
+                    <div class="stat"><div class="label">Active previews</div><div class="value">3</div></div>
+                    <div class="stat"><div class="label">Team members</div><div class="value">12</div></div>
                 </div>
             </aside>
         </section>
@@ -419,7 +538,7 @@
                     <p>All API requests require an API key. Create keys in the management console and scope them to projects or organization-level actions.</p>
                     <pre class="code"># Example header
 Authorization: Bearer &lt;API_KEY&gt;
-</pre>
+                    </pre>
                 </section>
 
                 <section id="doc-deploy" style="margin-top:18px">
@@ -439,7 +558,7 @@ Authorization: Bearer &lt;API_KEY&gt;
     "NODE_ENV": "production"
   }
 }
-</pre>
+                    </pre>
 
                     <h4 style="margin-top:10px">Response (200)</h4>
                     <pre class="code">{
@@ -470,7 +589,7 @@ POST /v1/projects/:projectId/env
   "value":"s3cr3t",
   "target":["production","preview"]
 }
-</pre>
+                    </pre>
                 </section>
 
                 <section id="doc-webhooks" style="margin-top:18px">
@@ -483,7 +602,7 @@ POST /v1/projects/:projectId/env
   "status":"success",
   "url":"https://example.com"
 }
-</pre>
+                    </pre>
                 </section>
 
                 <section id="doc-ops" style="margin-top:18px">
@@ -494,8 +613,8 @@ POST /v1/projects/:projectId/env
         </section>
     </main>
 
-    <!-- Log overlay: now includes a Vercel-like management panel on the left and logs on the right -->
-    <div id="logOverlay" class="log-overlay">
+    <!-- Log overlay: management panel on the left and logs on the right -->
+    <div id="logOverlay" class="log-overlay" role="dialog" aria-hidden="true">
         <div class="overlay-inner">
             <!-- Management panel (Vercel-like project settings) -->
             <div class="management" aria-hidden="false">
@@ -532,7 +651,7 @@ POST /v1/projects/:projectId/env
                 </div>
 
                 <div class="section" style="margin-top:16px;display:flex;gap:8px">
-                    <button class="deploy-btn" onclick="startDeploy()">Trigger Deploy</button>
+                    <button class="btn btn-primary" onclick="startDeploy()">Trigger Deploy</button>
                     <a class="live-btn" id="mgmtOpenLive" href="#" style="background:#0b1220">Open Site</a>
                 </div>
             </div>
@@ -541,7 +660,7 @@ POST /v1/projects/:projectId/env
             <div id="logContent" aria-live="polite" role="log"></div>
         </div>
 
-        <div id="successBox" class="success-box">
+        <div id="successBox" class="success-box" role="status" aria-hidden="true">
             <h2 style="font-size:40px;margin-bottom:20px;">Success!</h2>
             <p style="color:#dfffe6;margin-bottom:40px;">Site is now live and optimized.</p>
             <a href="#" id="liveLink" class="live-btn">Open Live Site</a>
@@ -617,10 +736,13 @@ POST /v1/projects/:projectId/env
         async function startDeploy() {
             const { user, repo, hasIndex } = window.currentRepo || { user: 'username', repo: 'repository', hasIndex: false };
             document.getElementById('logOverlay').style.display = 'flex';
+            document.getElementById('logOverlay').setAttribute('aria-hidden','false');
 
             // update management last deploy timestamp
             const mgmtLast = document.getElementById('mgmtLastDeploy');
             if (mgmtLast) mgmtLast.innerText = new Date().toLocaleString();
+            const statusLast = document.getElementById('statusLastDeploy');
+            if (statusLast) statusLast.innerText = new Date().toLocaleString();
 
             // clear previous logs
             document.getElementById('logContent').innerHTML = '';
@@ -639,6 +761,7 @@ POST /v1/projects/:projectId/env
             if (hasIndex) {
                 await addLog(`SUCCESS: index.html detected. Site is ready.`, 400);
                 document.getElementById('successBox').style.display = 'block';
+                document.getElementById('successBox').setAttribute('aria-hidden','false');
                 document.getElementById('liveLink').href = `/${user}/${repo}/`;
                 // update management deploy list
                 const mgmtDeploys = document.getElementById('mgmtDeploys');
@@ -651,6 +774,7 @@ POST /v1/projects/:projectId/env
             } else {
                 await addLog(`INFO: index.html not found. Using Directory Listing Mode.`, 400);
                 document.getElementById('successBox').style.display = 'block';
+                document.getElementById('successBox').setAttribute('aria-hidden','false');
                 document.getElementById('liveLink').href = `/${user}/${repo}/`;
                 const mgmtDeploys = document.getElementById('mgmtDeploys');
                 if (mgmtDeploys) {
