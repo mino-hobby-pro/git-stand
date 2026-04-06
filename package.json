@@ -1,7 +1,7 @@
 {
-  "name": "github-static-proxy-ultimate",
+  "name": "gitstand-ultimate",
   "version": "1.0.0",
-  "description": "Ultimate GitHub Static Site Proxy with Auto Path Rewriting",
+  "description": "Professional GitHub Static Site Deployment Platform",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
