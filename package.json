@@ -1,7 +1,7 @@
 {
-  "name": "github-static-proxy",
+  "name": "github-static-proxy-ultimate",
   "version": "1.0.0",
-  "description": "GitHub Static Site On-the-fly Proxy",
+  "description": "Ultimate GitHub Static Site Proxy with Auto Path Rewriting",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
