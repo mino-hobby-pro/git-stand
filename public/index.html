@@ -7,31 +7,36 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
         /* =========================
-           Design system — polished UI
-           Only visual/structure changes — JS logic preserved
+           Polished UI + Vercel-like startup logs
+           Visual changes only where possible; JS logic preserved and enhanced for structured logs
            ========================= */
 
         :root{
-            --bg: #f6f8fb;
+            --page-bg: #f6f8fb;
             --surface: #ffffff;
             --muted: #6b7280;
             --text: #0b1220;
             --accent: #0b5fff;
             --accent-2: #06b6d4;
-            --glass: rgba(255,255,255,0.6);
             --border: #e6e9ef;
-            --success: #0b8a3e;
-            --mono: 'JetBrains Mono', monospace;
             --radius: 12px;
             --shadow-soft: 0 8px 30px rgba(16,24,40,0.06);
             --shadow-strong: 0 20px 60px rgba(16,24,40,0.08);
+            --terminal-bg: linear-gradient(180deg,#0b0d10 0%, #050607 100%);
+            --terminal-panel: rgba(255,255,255,0.03);
+            --terminal-text: #e6eef6;
+            --terminal-muted: #9aa6b2;
+            --ok: #7dd3fc; /* subtle cyan accent like Vercel */
+            --warn: #ffd166;
+            --err: #ff7b7b;
+            --mono: 'JetBrains Mono', monospace;
         }
 
         *{box-sizing:border-box;margin:0;padding:0}
         html,body{height:100%}
         body{
             font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-            background: linear-gradient(180deg,#f6f8fb 0%, #eef2f7 100%);
+            background: linear-gradient(180deg,var(--page-bg) 0%, #eef2f7 100%);
             color:var(--text);
             -webkit-font-smoothing:antialiased;
             -moz-osx-font-smoothing:grayscale;
@@ -48,7 +53,7 @@
             align-items:center;
             justify-content:space-between;
             padding:0 28px;
-            background: rgba(255,255,255,0.85);
+            background: rgba(255,255,255,0.9);
             border-bottom: 1px solid var(--border);
             backdrop-filter: blur(6px);
         }
@@ -105,7 +110,7 @@
             padding:0 20px 80px;
         }
 
-        /* ---------- Hero ---------- */
+        /* ---------- Hero (clean, concise) ---------- */
         .hero {
             display:grid;
             grid-template-columns: 1fr 420px;
@@ -121,8 +126,8 @@
             border:1px solid var(--border);
         }
         .hero-title {
-            font-size:36px;
-            font-weight:600;
+            font-size:34px;
+            font-weight:700;
             margin-bottom:8px;
             letter-spacing:-0.4px;
         }
@@ -132,12 +137,12 @@
             font-size:15px;
         }
 
-        /* ---------- Input group (centered, widened) ---------- */
+        /* ---------- Input group (wider, centered) ---------- */
         .input-group { margin:18px 0 8px; display:flex; justify-content:center; }
         #repoInput {
             width:100%;
-            max-width:1100px; /* widened as requested */
-            padding:18px 26px;
+            max-width:1180px; /* widened per request */
+            padding:18px 28px;
             border-radius:999px;
             border:1px solid var(--border);
             background:linear-gradient(180deg,#fff,#fbfdff);
@@ -216,7 +221,7 @@
         .feature h4 { margin-bottom:8px; font-size:14px; }
         .feature p { color:var(--muted); font-size:13px; }
 
-        /* ---------- Docs area ---------- */
+        /* ---------- Docs area (concise) ---------- */
         .docs {
             margin-top:26px;
             display:grid;
@@ -271,17 +276,17 @@
         table.api-table th, table.api-table td{padding:10px;border-bottom:1px solid var(--border);text-align:left;font-size:14px}
         table.api-table th{background:transparent;color:var(--muted);font-weight:700}
 
-        /* ---------- Log overlay (management + terminal) ---------- */
+        /* ---------- Log overlay (Vercel-like startup logs) ---------- */
         .log-overlay{
             position:fixed;
             inset:0;
-            background: radial-gradient(1200px 600px at 10% 10%, rgba(10,10,10,0.98), rgba(0,0,0,0.95));
+            background: var(--terminal-bg);
             z-index:200;
             display:none;
             flex-direction:column;
             padding:28px;
             font-family:var(--mono);
-            color:#7CFF9A;
+            color:var(--terminal-text);
             -webkit-font-smoothing:subpixel-antialiased;
         }
         .log-overlay::before{
@@ -290,7 +295,7 @@
             background-image:
                 linear-gradient(transparent 60%, rgba(0,0,0,0.25)),
                 repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 3px);
-            mix-blend-mode:overlay;opacity:0.6;
+            mix-blend-mode:overlay;opacity:0.5;
         }
 
         .overlay-inner {
@@ -304,8 +309,9 @@
             margin:0 auto;
         }
 
+        /* Management panel (left) */
         .management {
-            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
             border-radius:12px;
             padding:18px;
             border:1px solid rgba(255,255,255,0.04);
@@ -326,50 +332,82 @@
         .env-key { font-weight:700; color:#fff }
         .env-val { color:rgba(255,255,255,0.6); font-family:var(--mono); font-size:13px }
 
+        /* Terminal / logs (right) */
         #logContent {
             position:relative;
             z-index:2;
-            padding:24px;
+            padding:18px;
             border-radius:8px;
-            background:linear-gradient(180deg, rgba(10,10,10,0.35), rgba(0,0,0,0.25));
-            box-shadow:var(--shadow-strong);
+            background: linear-gradient(180deg, rgba(6,8,10,0.55), rgba(3,4,5,0.45));
+            box-shadow: 0 30px 80px rgba(2,6,23,0.6);
             overflow:auto;
             max-height:calc(100vh - 160px);
             border:1px solid rgba(255,255,255,0.03);
-            color:#7CFF9A;
+            color:var(--terminal-text);
             font-family:var(--mono);
-            font-size:14px;
+            font-size:13px;
             line-height:1.6;
         }
 
-        .log-line{
-            margin-bottom:10px;
-            font-size:14px;
-            color:#7CFF9A;
+        /* Structured log line: timestamp | service | message */
+        .log-line {
+            display:flex;
+            gap:12px;
+            align-items:flex-start;
+            padding:8px 10px;
+            border-radius:6px;
+            margin-bottom:6px;
             opacity:0;
-            transform:translateX(-18px) skewX(-2deg);
-            display:inline-block;
+            transform:translateY(6px);
+            animation:logFadeIn 360ms forwards cubic-bezier(.2,.9,.2,1);
+        }
+        @keyframes logFadeIn {
+            to { opacity:1; transform:translateY(0); }
+        }
+
+        .log-ts {
+            color:var(--terminal-muted);
+            min-width:78px;
+            font-size:12px;
+            text-align:right;
+            padding-right:6px;
+            border-right:1px solid rgba(255,255,255,0.03);
+        }
+        .log-svc {
+            color:var(--terminal-muted);
+            font-weight:700;
+            font-size:12px;
+            min-width:110px;
+            text-transform:uppercase;
+            letter-spacing:0.6px;
+        }
+        .log-msg {
+            color:var(--terminal-text);
             white-space:pre-wrap;
-            text-shadow:0 0 6px rgba(124,255,154,0.12),0 0 18px rgba(124,255,154,0.06);
-            border-left:2px solid rgba(124,255,154,0.06);
-            padding-left:10px;
-            animation:logAppear 420ms forwards cubic-bezier(.2,.9,.2,1);
+            flex:1;
+            font-size:13px;
         }
-        @keyframes logAppear{
-            0%{opacity:0;transform:translateX(-24px) skewX(-4deg);filter:blur(1px)}
-            60%{opacity:1;transform:translateX(6px) skewX(0deg);filter:blur(0)}
-            100%{opacity:1;transform:translateX(0) skewX(0deg)}
-        }
-        .log-line::after{
-            content:"";
+
+        /* status badges inside messages */
+        .badge-ok { color:var(--ok); font-weight:700; }
+        .badge-warn { color:var(--warn); font-weight:700; }
+        .badge-err { color:var(--err); font-weight:700; }
+
+        /* subtle typing cursor for the last line */
+        .log-line .cursor {
             display:inline-block;
-            width:8px;height:14px;margin-left:8px;background:linear-gradient(90deg, rgba(124,255,154,0.95), rgba(124,255,154,0.6));
-            border-radius:2px;opacity:0;transform:translateY(0);animation:cursorPulse 1.2s steps(2,end) infinite;
+            width:8px;
+            height:14px;
+            margin-left:8px;
+            background:var(--terminal-text);
+            border-radius:2px;
+            opacity:0;
+            animation:cursorBlink 1.2s steps(2,end) infinite;
         }
-        @keyframes cursorPulse{
-            0%{opacity:0;transform:translateY(0)}
-            40%{opacity:1;transform:translateY(-1px)}
-            100%{opacity:0;transform:translateY(0)}
+        @keyframes cursorBlink {
+            0% { opacity:0; }
+            40% { opacity:1; }
+            100% { opacity:0; }
         }
 
         .success-box{
@@ -395,6 +433,8 @@
             .features { grid-template-columns: 1fr; }
             #repoInput { font-size:15px; padding:14px 18px; }
             .hero-title { font-size:22px; }
+            .log-ts { display:none; }
+            .log-svc { min-width:80px; }
         }
     </style>
 </head>
@@ -417,7 +457,7 @@
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:18px;">
                     <div style="flex:1">
                         <div class="hero-title">Deploy anything from GitHub — instant, secure, production-ready</div>
-                        <div class="hero-sub">GITStand converts GitHub repositories into globally distributed sites with predictable builds, preview environments, and enterprise controls.</div>
+                        <div class="hero-sub">Minimal, fast, and predictable deployments. Paste a GitHub URL and preview or publish in seconds.</div>
                     </div>
                     <div style="min-width:160px;text-align:right">
                         <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Trusted by teams</div>
@@ -428,12 +468,12 @@
                     </div>
                 </div>
 
-                <!-- Input and file browser (logic unchanged) -->
+                <!-- Input and file browser (logic preserved) -->
                 <div class="input-group">
                     <input type="text" id="repoInput" placeholder="https://github.com/username/repository" autocomplete="off">
                 </div>
 
-                <div id="browser" class="file-browser">
+                <div id="browser" class="file-browser" aria-hidden="true">
                     <div class="browser-header">
                         <div class="repo-name" id="repoNameDisplay">Files</div>
                         <div style="display:flex;gap:10px;align-items:center">
@@ -444,7 +484,7 @@
                     <div id="fileList" class="file-list"></div>
                 </div>
 
-                <!-- Feature highlights -->
+                <!-- Feature highlights (concise) -->
                 <div style="margin-top:18px">
                     <div style="display:flex;gap:12px;align-items:center">
                         <div style="flex:1" class="card">
@@ -489,10 +529,10 @@
                 </div>
 
                 <div class="card">
-                    <div style="font-weight:700;margin-bottom:8px">API Quickstart</div>
+                    <div style="font-weight:700;margin-bottom:8px">How to deploy</div>
                     <div style="color:var(--muted);font-size:13px;margin-bottom:10px">GITStand は API キーを使用しません。リポジトリ URL と OAuth / GitHub アプリ連携で操作します。</div>
                     <pre class="code" style="font-size:12px;padding:12px;border-radius:8px">
-# 例: リポジトリ URL を使ってデプロイをトリガーする（認証は OAuth で行われます）
+# 例: リポジトリ URL を使ってデプロイをトリガーする（認証は OAuth）
 POST https://api.gitstand.example/v1/deploy
 Content-Type: application/json
 
@@ -513,7 +553,7 @@ Content-Type: application/json
             </aside>
         </section>
 
-        <!-- API docs and developer guide -->
+        <!-- API docs (kept concise) -->
         <section class="docs">
             <aside class="sidebar">
                 <div class="nav-list">
@@ -522,107 +562,42 @@ Content-Type: application/json
                     <li onclick="document.getElementById('doc-deploy').scrollIntoView({behavior:'smooth'})">Deploy API</li>
                     <li onclick="document.getElementById('doc-env').scrollIntoView({behavior:'smooth'})">Environment Variables</li>
                     <li onclick="document.getElementById('doc-webhooks').scrollIntoView({behavior:'smooth'})">Webhooks</li>
-                    <li onclick="document.getElementById('doc-ops').scrollIntoView({behavior:'smooth'})">Operational Controls</li>
                 </div>
             </aside>
 
             <div class="doc-panel">
                 <section id="doc-getting-started">
                     <h3>Getting started</h3>
-                    <p>Connect your GitHub repository, choose a build command, and GITStand will create preview environments for pull requests and a production deployment for your protected branch.</p>
-                    <h4 style="margin-top:12px">Typical workflow</h4>
-                    <ol style="margin-left:18px;color:var(--muted);margin-bottom:12px">
-                        <li>Connect GitHub and grant repository access (OAuth / GitHub App).</li>
-                        <li>Configure build settings (build command, output directory).</li>
-                        <li>Push to a branch — preview environment is created automatically.</li>
-                        <li>Merge to production branch — atomic deploy to CDN.</li>
-                    </ol>
+                    <p>Connect your GitHub repository via OAuth or GitHub App, configure build settings, and deploy.</p>
                 </section>
 
                 <section id="doc-auth" style="margin-top:18px">
                     <h3>Authentication</h3>
-                    <p>GITStand は API キーを使用しません。ユーザー認証とリポジトリアクセスは GitHub OAuth または GitHub App を通じて行います。管理コンソールで OAuth を設定し、必要なリポジトリ権限を付与してください。</p>
-                    <pre class="code"># 認証の概念
-# 1) ユーザーが GitHub で OAuth 承認を行う
-# 2) GITStand はアクセストークンを取得してリポジトリ操作を実行する
-                    </pre>
+                    <p>GITStand は API キーを使用しません。ユーザー認証とリポジトリアクセスは GitHub OAuth または GitHub App を通じて行います。</p>
                 </section>
 
                 <section id="doc-deploy" style="margin-top:18px">
                     <h3>Deploy API</h3>
-                    <p>トリガーはリポジトリ情報を送るだけで完了します。認証は OAuth によるため、API キーは不要です。レスポンスにはデプロイの状態とログ URL が含まれます。</p>
-
-                    <h4 style="margin-top:10px">Request</h4>
-                    <pre class="code">POST https://api.gitstand.example/v1/deploy
-Content-Type: application/json
-
-{
-  "owner": "username",
-  "repo": "repository",
-  "branch": "main",
-  "env": {
-    "NODE_ENV": "production"
-  }
-}
-                    </pre>
-
-                    <h4 style="margin-top:10px">Response (200)</h4>
-                    <pre class="code">{
-  "id": "deploy_01F...",
-  "status": "queued",
-  "logs_url": "https://console.gitstand.example/deploys/deploy_01F..."
-}</pre>
-
-                    <h4 style="margin-top:10px">Polling status</h4>
-                    <p style="color:var(--muted)">deployments エンドポイントでポーリングするか、Webhook を購読して非同期通知を受け取れます。</p>
-                    <table class="api-table">
-                        <thead><tr><th>Field</th><th>Description</th></tr></thead>
-                        <tbody>
-                            <tr><td>id</td><td>Unique deployment identifier</td></tr>
-                            <tr><td>status</td><td>queued | building | success | failed</td></tr>
-                            <tr><td>logs_url</td><td>URL to stream build logs</td></tr>
-                        </tbody>
-                    </table>
+                    <p>リポジトリ情報を送るだけでデプロイをトリガーできます。レスポンスにログ URL が含まれます。</p>
                 </section>
 
                 <section id="doc-env" style="margin-top:18px">
                     <h3>Environment Variables</h3>
-                    <p>プロジェクト単位・環境単位でシークレットを管理します。値は保存時に暗号化され、UI とログではマスクされます。</p>
-                    <pre class="code"># Set via API (認証は OAuth)
-POST /v1/projects/:projectId/env
-{
-  "key":"API_TOKEN",
-  "value":"s3cr3t",
-  "target":["production","preview"]
-}
-                    </pre>
+                    <p>プロジェクト単位でシークレットを管理し、UI とログではマスクされます。</p>
                 </section>
 
                 <section id="doc-webhooks" style="margin-top:18px">
                     <h3>Webhooks</h3>
-                    <p>デプロイ完了や失敗などのイベントを受け取るために Webhook を設定できます。署名シークレットを設定してペイロードの検証を行ってください。</p>
-                    <pre class="code"># Example payload
-{
-  "event":"deployment.finished",
-  "project":"username/repo",
-  "status":"success",
-  "url":"https://example.com"
-}
-                    </pre>
-                </section>
-
-                <section id="doc-ops" style="margin-top:18px">
-                    <h3>Operational Controls</h3>
-                    <p>監査ログ、ロールベースのアクセス制御、レート制限などの運用機能を提供します。管理コンソールから SSO やチーム権限を設定してください。</p>
+                    <p>デプロイイベントを受け取るために Webhook を設定できます。署名シークレットで検証してください。</p>
                 </section>
             </div>
         </section>
     </main>
 
-    <!-- Log overlay: management panel on the left and logs on the right -->
+    <!-- Log overlay: Vercel-like management panel on the left and startup logs on the right -->
     <div id="logOverlay" class="log-overlay" role="dialog" aria-hidden="true">
         <div class="overlay-inner">
-            <!-- Management panel (Vercel-like project settings) -->
+            <!-- Management panel (left) -->
             <div class="management" aria-hidden="false">
                 <div class="proj-header">
                     <div class="proj-badge">PROJECT</div>
@@ -651,8 +626,8 @@ POST /v1/projects/:projectId/env
                 <div class="section">
                     <h4>Recent Deployments</h4>
                     <div class="deploy-list" id="mgmtDeploys">
-                        <div class="deploy-item"><div>deploy_01F... <small style="margin-left:8px;color:rgba(255,255,255,0.6)">main</small></div><div style="color:#7CFF9A">Success</div></div>
-                        <div class="deploy-item"><div>deploy_01E... <small style="margin-left:8px;color:rgba(255,255,255,0.6)">feature/x</small></div><div style="color:#ffd166">Building</div></div>
+                        <div class="deploy-item"><div>deploy_01F... <small style="margin-left:8px;color:rgba(255,255,255,0.6)">main</small></div><div style="color:var(--ok)">Success</div></div>
+                        <div class="deploy-item"><div>deploy_01E... <small style="margin-left:8px;color:rgba(255,255,255,0.6)">feature/x</small></div><div style="color:var(--warn)">Building</div></div>
                     </div>
                 </div>
 
@@ -702,6 +677,7 @@ POST /v1/projects/:projectId/env
                     fileList.appendChild(item);
                 });
                 browser.style.display = 'block';
+                browser.setAttribute('aria-hidden','false');
                 window.currentRepo = { user, repo, hasIndex: data.some(f => f.name === 'index.html') };
 
                 // Update management panel project name and sample domain
@@ -724,16 +700,58 @@ POST /v1/projects/:projectId/env
             } catch (e) { console.error(e); }
         }
 
-        function addLog(text, delay) {
+        /**
+         * addLog now creates structured log entries that resemble Vercel-style startup logs:
+         * [timestamp] SERVICE   message
+         * The JS logic that calls addLog is preserved; addLog formats entries and appends them.
+         */
+        function formatTime(date = new Date()) {
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+        }
+
+        function addLog(text, delay, service = 'system') {
             return new Promise(res => {
                 setTimeout(() => {
+                    const container = document.getElementById('logContent');
+
+                    // Create structured line
                     const line = document.createElement('div');
                     line.className = 'log-line';
-                    line.innerText = `> ${text}`;
-                    document.getElementById('logContent').appendChild(line);
-                    // auto-scroll to bottom
-                    const lc = document.getElementById('logContent');
-                    lc.scrollTop = lc.scrollHeight;
+
+                    const ts = document.createElement('div');
+                    ts.className = 'log-ts';
+                    ts.innerText = formatTime();
+
+                    const svc = document.createElement('div');
+                    svc.className = 'log-svc';
+                    svc.innerText = service;
+
+                    const msg = document.createElement('div');
+                    msg.className = 'log-msg';
+
+                    // Simple heuristics to style status words
+                    let content = text;
+                    content = content.replace(/SUCCESS:|Success:|SUCCESS/g, match => `<span class="badge-ok">${match}</span>`);
+                    content = content.replace(/ERROR:|Error:|FAILED|Failed/g, match => `<span class="badge-err">${match}</span>`);
+                    content = content.replace(/INFO:|Info:/g, match => `<span class="badge-warn">${match}</span>`);
+
+                    msg.innerHTML = content;
+
+                    line.appendChild(ts);
+                    line.appendChild(svc);
+                    line.appendChild(msg);
+
+                    container.appendChild(line);
+
+                    // Auto-scroll
+                    container.scrollTop = container.scrollHeight;
+
+                    // Add a small cursor to the last line for realism
+                    const cursor = document.createElement('span');
+                    cursor.className = 'cursor';
+                    msg.appendChild(cursor);
+
                     res();
                 }, delay);
             });
@@ -753,19 +771,22 @@ POST /v1/projects/:projectId/env
             // clear previous logs
             document.getElementById('logContent').innerHTML = '';
 
-            await addLog(`Initializing GITStand Deployment Engine...`, 500);
-            await addLog(`Cloning repository: ${user}/${repo}`, 800);
-            await addLog(`Resolving Git refs and fetching submodules...`, 600);
-            await addLog(`Analyzing directory structure...`, 600);
-            await addLog(`Detecting build system and runtime...`, 700);
-            await addLog(`Installing dependencies (yarn / npm)...`, 900);
-            await addLog(`Running build command: npm run build`, 1200);
-            await addLog(`Optimizing assets and rewriting absolute paths...`, 1000);
-            await addLog(`Uploading artifacts to CDN and creating edge manifests...`, 900);
-            await addLog(`Validating entry point...`, 500);
+            // Structured startup-like logs (service names chosen to evoke Vercel-like startup)
+            await addLog(`Initializing GITStand Deployment Engine...`, 450, 'orchestrator');
+            await addLog(`Cloning repository: ${user}/${repo}`, 700, 'git');
+            await addLog(`Resolving Git refs and fetching submodules...`, 500, 'git');
+            await addLog(`Analyzing directory structure...`, 420, 'inspector');
+            await addLog(`Detecting build system and runtime...`, 520, 'detector');
+            await addLog(`Installing dependencies (yarn / npm)...`, 900, 'installer');
+            await addLog(`Running build command: npm run build`, 1100, 'builder');
+            await addLog(`Build completed: 3.2s — assets optimized`, 600, 'builder');
+            await addLog(`Uploading artifacts to CDN and creating edge manifests...`, 800, 'uploader');
+            await addLog(`Creating edge functions and routing rules...`, 600, 'edge');
+            await addLog(`Starting serverless runtime and warming caches...`, 700, 'runtime');
+            await addLog(`Validating entry point...`, 400, 'inspector');
 
             if (hasIndex) {
-                await addLog(`SUCCESS: index.html detected. Site is ready.`, 400);
+                await addLog(`SUCCESS: index.html detected. Site is ready.`, 420, 'inspector');
                 document.getElementById('successBox').style.display = 'block';
                 document.getElementById('successBox').setAttribute('aria-hidden','false');
                 document.getElementById('liveLink').href = `/${user}/${repo}/`;
@@ -774,11 +795,11 @@ POST /v1/projects/:projectId/env
                 if (mgmtDeploys) {
                     const item = document.createElement('div');
                     item.className = 'deploy-item';
-                    item.innerHTML = `<div>deploy_${Math.random().toString(36).slice(2,9)} <small style="margin-left:8px;color:rgba(255,255,255,0.6)">main</small></div><div style="color:#7CFF9A">Success</div>`;
+                    item.innerHTML = `<div>deploy_${Math.random().toString(36).slice(2,9)} <small style="margin-left:8px;color:rgba(255,255,255,0.6)">main</small></div><div style="color:var(--ok)">Success</div>`;
                     mgmtDeploys.prepend(item);
                 }
             } else {
-                await addLog(`INFO: index.html not found. Using Directory Listing Mode.`, 400);
+                await addLog(`INFO: index.html not found. Falling back to directory listing.`, 420, 'inspector');
                 document.getElementById('successBox').style.display = 'block';
                 document.getElementById('successBox').setAttribute('aria-hidden','false');
                 document.getElementById('liveLink').href = `/${user}/${repo}/`;
@@ -786,7 +807,7 @@ POST /v1/projects/:projectId/env
                 if (mgmtDeploys) {
                     const item = document.createElement('div');
                     item.className = 'deploy-item';
-                    item.innerHTML = `<div>deploy_${Math.random().toString(36).slice(2,9)} <small style="margin-left:8px;color:rgba(255,255,255,0.6)">main</small></div><div style="color:#ffd166">Directory</div>`;
+                    item.innerHTML = `<div>deploy_${Math.random().toString(36).slice(2,9)} <small style="margin-left:8px;color:rgba(255,255,255,0.6)">main</small></div><div style="color:var(--warn)">Directory</div>`;
                     mgmtDeploys.prepend(item);
                 }
             }
