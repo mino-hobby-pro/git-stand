@@ -132,11 +132,11 @@
             font-size:15px;
         }
 
-        /* ---------- Input group (centered) ---------- */
+        /* ---------- Input group (centered, widened) ---------- */
         .input-group { margin:18px 0 8px; display:flex; justify-content:center; }
         #repoInput {
             width:100%;
-            max-width:820px;
+            max-width:1100px; /* widened as requested */
             padding:18px 26px;
             border-radius:999px;
             border:1px solid var(--border);
@@ -490,11 +490,17 @@
 
                 <div class="card">
                     <div style="font-weight:700;margin-bottom:8px">API Quickstart</div>
-                    <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Trigger builds, manage env, and query deployments via REST.</div>
-                    <pre class="code" style="font-size:12px;padding:12px;border-radius:8px">curl -X POST "https://api.gitstand.example/v1/deploy" \
-  -H "Authorization: Bearer &lt;API_KEY&gt;" \
-  -H "Content-Type: application/json" \
-  -d '{"owner":"username","repo":"repository","branch":"main"}'
+                    <div style="color:var(--muted);font-size:13px;margin-bottom:10px">GITStand は API キーを使用しません。リポジトリ URL と OAuth / GitHub アプリ連携で操作します。</div>
+                    <pre class="code" style="font-size:12px;padding:12px;border-radius:8px">
+# 例: リポジトリ URL を使ってデプロイをトリガーする（認証は OAuth で行われます）
+POST https://api.gitstand.example/v1/deploy
+Content-Type: application/json
+
+{
+  "owner": "username",
+  "repo": "repository",
+  "branch": "main"
+}
                     </pre>
                 </div>
 
@@ -526,7 +532,7 @@
                     <p>Connect your GitHub repository, choose a build command, and GITStand will create preview environments for pull requests and a production deployment for your protected branch.</p>
                     <h4 style="margin-top:12px">Typical workflow</h4>
                     <ol style="margin-left:18px;color:var(--muted);margin-bottom:12px">
-                        <li>Connect GitHub and grant repository access.</li>
+                        <li>Connect GitHub and grant repository access (OAuth / GitHub App).</li>
                         <li>Configure build settings (build command, output directory).</li>
                         <li>Push to a branch — preview environment is created automatically.</li>
                         <li>Merge to production branch — atomic deploy to CDN.</li>
@@ -535,20 +541,20 @@
 
                 <section id="doc-auth" style="margin-top:18px">
                     <h3>Authentication</h3>
-                    <p>All API requests require an API key. Create keys in the management console and scope them to projects or organization-level actions.</p>
-                    <pre class="code"># Example header
-Authorization: Bearer &lt;API_KEY&gt;
+                    <p>GITStand は API キーを使用しません。ユーザー認証とリポジトリアクセスは GitHub OAuth または GitHub App を通じて行います。管理コンソールで OAuth を設定し、必要なリポジトリ権限を付与してください。</p>
+                    <pre class="code"># 認証の概念
+# 1) ユーザーが GitHub で OAuth 承認を行う
+# 2) GITStand はアクセストークンを取得してリポジトリ操作を実行する
                     </pre>
                 </section>
 
                 <section id="doc-deploy" style="margin-top:18px">
                     <h3>Deploy API</h3>
-                    <p>Trigger a deployment programmatically. The API returns a deployment object with status and logs endpoint.</p>
+                    <p>トリガーはリポジトリ情報を送るだけで完了します。認証は OAuth によるため、API キーは不要です。レスポンスにはデプロイの状態とログ URL が含まれます。</p>
 
                     <h4 style="margin-top:10px">Request</h4>
                     <pre class="code">POST https://api.gitstand.example/v1/deploy
 Content-Type: application/json
-Authorization: Bearer &lt;API_KEY&gt;
 
 {
   "owner": "username",
@@ -568,7 +574,7 @@ Authorization: Bearer &lt;API_KEY&gt;
 }</pre>
 
                     <h4 style="margin-top:10px">Polling status</h4>
-                    <p style="color:var(--muted)">Use the deployments endpoint to poll status or subscribe to webhooks for push notifications.</p>
+                    <p style="color:var(--muted)">deployments エンドポイントでポーリングするか、Webhook を購読して非同期通知を受け取れます。</p>
                     <table class="api-table">
                         <thead><tr><th>Field</th><th>Description</th></tr></thead>
                         <tbody>
@@ -581,8 +587,8 @@ Authorization: Bearer &lt;API_KEY&gt;
 
                 <section id="doc-env" style="margin-top:18px">
                     <h3>Environment Variables</h3>
-                    <p>Manage secrets per-project or per-environment. Values are encrypted at rest and masked in the UI and logs.</p>
-                    <pre class="code"># Set via API
+                    <p>プロジェクト単位・環境単位でシークレットを管理します。値は保存時に暗号化され、UI とログではマスクされます。</p>
+                    <pre class="code"># Set via API (認証は OAuth)
 POST /v1/projects/:projectId/env
 {
   "key":"API_TOKEN",
@@ -594,7 +600,7 @@ POST /v1/projects/:projectId/env
 
                 <section id="doc-webhooks" style="margin-top:18px">
                     <h3>Webhooks</h3>
-                    <p>Subscribe to deployment lifecycle events to integrate with CI, Slack, or monitoring systems.</p>
+                    <p>デプロイ完了や失敗などのイベントを受け取るために Webhook を設定できます。署名シークレットを設定してペイロードの検証を行ってください。</p>
                     <pre class="code"># Example payload
 {
   "event":"deployment.finished",
@@ -607,7 +613,7 @@ POST /v1/projects/:projectId/env
 
                 <section id="doc-ops" style="margin-top:18px">
                     <h3>Operational Controls</h3>
-                    <p>Audit logs, role-based access control, and rate limits are available for enterprise plans. Use the management console to configure SSO and team permissions.</p>
+                    <p>監査ログ、ロールベースのアクセス制御、レート制限などの運用機能を提供します。管理コンソールから SSO やチーム権限を設定してください。</p>
                 </section>
             </div>
         </section>
